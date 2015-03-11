@@ -9,26 +9,28 @@
 #import "ViewController.h"
 #import "RedditDownloaderService.h"
 
-@interface ViewController ()
-
+@interface ViewController () {
+    int nextBackgroundImageIndex;
+    NSArray *imageUrls;
+    UIImageView *backgroundView;
+}
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
 
 //    RedditDownloaderService *redditDownloaderService = [[RedditDownloaderService alloc] init];
     
-    NSArray *imageUrls = [RedditDownloaderService downloadMessagesFromReddit];
+    imageUrls = [RedditDownloaderService downloadMessagesFromReddit];
     NSLog(imageUrls.description);
     // PUT THIS IN NEW THREAD?
     NSString *urlString = [imageUrls objectAtIndex:0];
     
     UIImageView *imageView = [self urlToImageView:urlString];
-    NSString *urlString2 = [imageUrls objectAtIndex:1];
-
-    UIImageView *backgroundImageView = [self urlToImageView:urlString2];
+ 
 
     imageView.frame = self.view.frame;
     imageView.contentMode = UIViewContentModeScaleToFill;
@@ -38,8 +40,11 @@
                                    initWithTarget:self action:@selector(handlePan:)];
     
     [imageView addGestureRecognizer:pgr];
-    [self.view addSubview:backgroundImageView];
+    nextBackgroundImageIndex = 1;
+
+    [self addBackgroundView];
     [self.view addSubview:imageView];
+    nextBackgroundImageIndex = 2;
     
     
 
@@ -51,19 +56,25 @@
 
     if(recognizer.state == UIGestureRecognizerStateEnded)
     {
-//        NSLog(@"center: %f width: %f translation: %f", recognizer.view.center.x, self.view.frame.size.width, translation.x);
+        NSLog(@"center: %f width: %f translation: %f", recognizer.view.center.x, self.view.frame.size.width, translation.x);
         if (recognizer.view.center.x < 20) {
             NSLog(@"panned halfway");
-            recognizer.view.center = self.view.center;
+            recognizer.view.center = CGPointMake(-300, self.view.center.y);
             [recognizer setTranslation:CGPointMake(0, 0) inView:self.view];
+            [recognizer.view removeFromSuperview];
+            [self addBackgroundView];
+//            [self.view bringSubviewToFront:[[self.view subviews] objectAtIndex:0]];
+            NSLog([self.view subviews].description);
+            [self addGestureForNewView:backgroundView];
         }
         else {
             recognizer.view.center = self.view.center;
             [recognizer setTranslation:CGPointMake(0, 0) inView:self.view];
         }
-        NSLog(@"finished panning");
-        //All fingers are lifted.
     }
+    
+    NSLog(@"CHANGE center: %f width: %f translation: %f", recognizer.view.center.x, self.view.frame.size.width, translation.x);
+
     
     
     
@@ -81,6 +92,30 @@
     UIImage *image = [UIImage imageWithData: [NSData dataWithContentsOfURL:url]];
     UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
     return imageView;
+}
+
+
+- (void) addGestureForNewView: (UIView*) view {
+    UIPanGestureRecognizer *pgr = [[UIPanGestureRecognizer alloc]
+                                   initWithTarget:self action:@selector(handlePan:)];
+    
+    [view addGestureRecognizer:pgr];
+    view.userInteractionEnabled = YES;
+    
+}
+             
+ - (void) addBackgroundView {
+     NSString *urlString = [imageUrls objectAtIndex:nextBackgroundImageIndex];
+     
+     backgroundView = [self urlToImageView:urlString];
+     nextBackgroundImageIndex ++;
+     
+     backgroundView.frame = self.view.frame;
+     backgroundView.contentMode = UIViewContentModeScaleToFill;
+     
+     backgroundView.userInteractionEnabled = NO;
+     [self.view insertSubview:backgroundView atIndex:1];
+
 }
 
 - (void)didReceiveMemoryWarning {
