@@ -20,7 +20,20 @@
 
 //    RedditDownloaderService *redditDownloaderService = [[RedditDownloaderService alloc] init];
     
-    NSArray *images = [RedditDownloaderService downloadMessagesFromReddit];
+    NSArray *imageUrls = [RedditDownloaderService downloadMessagesFromReddit];
+    NSLog(imageUrls.description);
+    // PUT THIS IN NEW THREAD?
+    NSString *urlString = [imageUrls objectAtIndex:0];
+    if (!([urlString containsString:@".jpg"] || [urlString containsString:@".png"])){
+        urlString = [urlString stringByAppendingString:@".jpg"];
+    }
+    NSURL *url = [NSURL URLWithString:urlString];
+    UIImage *image = [UIImage imageWithData: [NSData dataWithContentsOfURL:url]];
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+    [self.view addSubview:imageView];
+    
+    
+
     // Do any additional setup after loading the view, typically from a nib.
 }
 

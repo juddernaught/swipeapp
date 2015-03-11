@@ -16,7 +16,7 @@
 @implementation RedditDownloaderService
 
 + (NSArray*) downloadMessagesFromReddit {
-    NSArray *results = [[NSArray alloc] init];
+    NSMutableArray *results = [[NSMutableArray alloc] init];
     
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.reddit.com/r/pics.json"]];
     NSURLResponse *response = nil;
@@ -32,8 +32,10 @@
                                                              options:kNilOptions
                                                                error:&error];
         NSArray *itemsToParseAndDownload = [[jsonDictionary objectForKey:@"data"] objectForKey:@"children"];
-        for 
-        NSLog (itemsToParseAndDownload.description);
+        for (NSDictionary *item in itemsToParseAndDownload) {
+            NSString *url = [[item objectForKey:@"data"] objectForKey:@"url"];
+            [results addObject:url];
+        }
     }
     
     
