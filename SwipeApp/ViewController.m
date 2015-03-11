@@ -62,10 +62,9 @@
             recognizer.view.center = CGPointMake(-300, self.view.center.y);
             [recognizer setTranslation:CGPointMake(0, 0) inView:self.view];
             [recognizer.view removeFromSuperview];
-            [self addBackgroundView];
-//            [self.view bringSubviewToFront:[[self.view subviews] objectAtIndex:0]];
-            NSLog([self.view subviews].description);
             [self addGestureForNewView:backgroundView];
+            [self addBackgroundView];
+            NSLog([self.view subviews].description);
         }
         else {
             recognizer.view.center = self.view.center;
