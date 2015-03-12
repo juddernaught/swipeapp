@@ -56,16 +56,62 @@
 
     if(recognizer.state == UIGestureRecognizerStateEnded)
     {
+        CGPoint velocity = [recognizer velocityInView:self.view];
+        NSLog(@"%f, %f", velocity.x, velocity.y);
         NSLog(@"center: %f width: %f translation: %f", recognizer.view.center.x, self.view.frame.size.width, translation.x);
-        if (recognizer.view.center.x < 20) {
+        // user has swiped off the screen
+        if (recognizer.view.center.x < 20 || recognizer.view.center.x > 350) {
+            if (recognizer.view.center.x < 20) {
+//                recognizer.view.center = CGPointMake(-300, self.view.center.y);
+                NSLog(@"here");
+//                CGPoint startPos = recognizer.view.layer.position;
+//                CGPoint endPos = CGPointMake(-300, recognizer.view.layer.position.y);
+//                
+//                CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"position.x"];
+//                anim.fromValue  = [NSValue valueWithCGPoint:startPos];
+//                anim.toValue    = [NSValue valueWithCGPoint:endPos];
+//                anim.duration   = 100.5f;
+//                anim.speed = 3.0;
+//                anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+//                
+//                [recognizer.view.layer addAnimation:anim forKey:@"position.x"];
+//                recognizer.view.layer.position = endPos;
+                float f = abs(3/velocity.x);
+                [UIView animateWithDuration: .08f
+                                      delay:0.0f
+                                    options:UIViewAnimationOptionCurveEaseIn
+                                 animations:^{
+                                     recognizer.view.frame = CGRectMake(-300, recognizer.view.frame.origin.y, recognizer.view.frame.size.width, recognizer.view.frame.size.height);
+                                 }
+                                 completion:^(BOOL finished) {
+                                     [recognizer.view removeFromSuperview];
+//                                     recognizer.view = nil;
+                                 }
+                 ];
+            }
+            else {
+//                recognizer.view.center = CGPointMake(800, self.view.center.y);
+                float f = abs(3/velocity.x);
+                [UIView animateWithDuration: f
+                                      delay:0.0f
+                                    options:UIViewAnimationOptionCurveEaseIn
+                                 animations:^{
+                                     recognizer.view.frame = CGRectMake(900, recognizer.view.frame.origin.y, recognizer.view.frame.size.width, recognizer.view.frame.size.height);
+                                 }
+                                 completion:^(BOOL finished) {
+                                     [recognizer.view removeFromSuperview];
+                                     //                                     recognizer.view = nil;
+                                 }
+                 ];
+            }
+            
             NSLog(@"panned halfway");
-            recognizer.view.center = CGPointMake(-300, self.view.center.y);
-            [recognizer setTranslation:CGPointMake(0, 0) inView:self.view];
-            [recognizer.view removeFromSuperview];
+//            [recognizer setTranslation:CGPointMake(0, 0) inView:self.view];
+//            [recognizer.view removeFromSuperview];
             [self addGestureForNewView:backgroundView];
             [self addBackgroundView];
-            NSLog([self.view subviews].description);
         }
+        
         else {
             recognizer.view.center = self.view.center;
             [recognizer setTranslation:CGPointMake(0, 0) inView:self.view];
