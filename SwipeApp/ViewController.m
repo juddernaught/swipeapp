@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "RedditDownloaderService.h"
+#import <pop/POP.h>
 
 @interface ViewController () {
     int nextBackgroundImageIndex;
@@ -62,52 +63,20 @@
         // user has swiped off the screen
         if (recognizer.view.center.x < 20 || recognizer.view.center.x > 350) {
             if (recognizer.view.center.x < 20) {
-//                recognizer.view.center = CGPointMake(-300, self.view.center.y);
-                NSLog(@"here");
-//                CGPoint startPos = recognizer.view.layer.position;
-//                CGPoint endPos = CGPointMake(-300, recognizer.view.layer.position.y);
-//                
-//                CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"position.x"];
-//                anim.fromValue  = [NSValue valueWithCGPoint:startPos];
-//                anim.toValue    = [NSValue valueWithCGPoint:endPos];
-//                anim.duration   = 100.5f;
-//                anim.speed = 3.0;
-//                anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
-//                
-//                [recognizer.view.layer addAnimation:anim forKey:@"position.x"];
-//                recognizer.view.layer.position = endPos;
-                float f = abs(3/velocity.x);
-                [UIView animateWithDuration: .08f
-                                      delay:0.0f
-                                    options:UIViewAnimationOptionCurveEaseIn
-                                 animations:^{
-                                     recognizer.view.frame = CGRectMake(-300, recognizer.view.frame.origin.y, recognizer.view.frame.size.width, recognizer.view.frame.size.height);
-                                 }
-                                 completion:^(BOOL finished) {
-                                     [recognizer.view removeFromSuperview];
-//                                     recognizer.view = nil;
-                                 }
-                 ];
+                POPDecayAnimation *anim = [POPDecayAnimation animationWithPropertyNamed:kPOPLayerPositionX];
+
+                anim.velocity = @(velocity.x*2);
+                [recognizer.view.layer pop_addAnimation:anim forKey:@"slide"];
             }
             else {
-//                recognizer.view.center = CGPointMake(800, self.view.center.y);
-                float f = abs(3/velocity.x);
-                [UIView animateWithDuration: f
-                                      delay:0.0f
-                                    options:UIViewAnimationOptionCurveEaseIn
-                                 animations:^{
-                                     recognizer.view.frame = CGRectMake(900, recognizer.view.frame.origin.y, recognizer.view.frame.size.width, recognizer.view.frame.size.height);
-                                 }
-                                 completion:^(BOOL finished) {
-                                     [recognizer.view removeFromSuperview];
-                                     //                                     recognizer.view = nil;
-                                 }
-                 ];
+           
+                POPDecayAnimation *anim = [POPDecayAnimation animationWithPropertyNamed:kPOPLayerPositionX];
+                anim.velocity = @(velocity.x*2);
+                [recognizer.view.layer pop_addAnimation:anim forKey:@"slide"];
             }
             
             NSLog(@"panned halfway");
-//            [recognizer setTranslation:CGPointMake(0, 0) inView:self.view];
-//            [recognizer.view removeFromSuperview];
+
             [self addGestureForNewView:backgroundView];
             [self addBackgroundView];
         }
